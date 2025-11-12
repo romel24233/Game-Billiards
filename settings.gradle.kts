@@ -1,0 +1,1 @@
+rootProject.name = "Billiards-2D"
