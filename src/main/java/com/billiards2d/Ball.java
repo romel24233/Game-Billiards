@@ -22,6 +22,14 @@ public abstract class Ball implements GameObject {
     @Override
     public void update(double deltaTime) {
         // TODO: Add physics in Week 4
+        // Rumus untuk velocity : posisi baru = posisi lama + velocity * dt(waktu per frame cmiiw)
+        position = position.add(velocity.multiply(deltaTime));
+
+        // value untuk gesekan bola biar stop, atur aja king
+        double friction = 0.992;
+        velocity = velocity.multiply(friction);
+        if (velocity.length() < 15)
+            velocity = new Vector2D(0, 0); // biar ga gerak ketika sudah tidak ada gaya
     }
 
     @Override
@@ -36,6 +44,7 @@ public abstract class Ball implements GameObject {
     }
 
     public Vector2D getPosition() { return position; }
+    public void setPosition(Vector2D position) { this.position = position; }
     public Vector2D getVelocity() { return velocity; }
     public void setVelocity(Vector2D velocity) { this.velocity = velocity; }
     public double getRadius() { return radius; }
