@@ -15,19 +15,18 @@ public class PhysicsEngine implements GameObject {
 
     @Override
     public void update(double deltaTime) {
-        // TODO: Implement collision detection in Week 4-5
         for (GameObject obj1 : gameObjects) {
             if (!(obj1 instanceof Ball)) continue;
-            Ball b1 =  (Ball) obj1;
+            Ball b1 = (Ball) obj1;
+            if (!b1.isActive()) continue;
 
+            if (checkPocketCollision(b1)) continue;
             checkWallCollision(b1);
 
             for (GameObject obj2 : gameObjects) {
                 if (!(obj2 instanceof Ball)) continue;
-                Ball b2 =  (Ball) obj2;
-
-                if (b1 == b2) continue;
-
+                Ball b2 = (Ball) obj2;
+                if (b1 == b2 || !b2.isActive()) continue;
                 resolveBallCollision(b1, b2);
             }
         }
@@ -35,42 +34,60 @@ public class PhysicsEngine implements GameObject {
 
     @Override
     public void draw(GraphicsContext gc) {
-        // No rendering needed
+    }
+
+    private boolean checkPocketCollision(Ball ball) {
+        double pocketSensitiveRadius = table.getPocketRadius() * 0.9;
+
+        for (Vector2D pocketPos : table.getPockets()) {
+            double dist = ball.getPosition().subtract(pocketPos).length();
+
+            if (dist < pocketSensitiveRadius) {
+                ball.setVelocity(new Vector2D(0, 0));
+                if (ball instanceof CueBall) {
+                    ((CueBall) ball).reset(); // Scratch
+                } else {
+                    ball.setActive(false); // Ball potted
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkWallCollision(Ball ball) {
         double x = ball.getPosition().getX();
         double y = ball.getPosition().getY();
         double r = ball.getRadius();
-
         double vx = ball.getVelocity().getX();
         double vy = ball.getVelocity().getY();
 
+        double rail = table.getRailSize();
+        double width = table.getWidth();
+        double height = table.getHeight();
+
+        // High restitution for realistic bank shots
+        double wallBounciness = 0.95;
+
         boolean collided = false;
 
-        // left wall
-        if (x - r < 0) {
-            x = r;
-            vx = -vx;
+        if (x - r < rail) {
+            x = rail + r;
+            vx = -vx * wallBounciness;
             collided = true;
-        }
-        // right wall
-        else if (x + r > table.getWidth()) {
-            x = table.getWidth() - r;
-            vx = -vx;
+        } else if (x + r > width - rail) {
+            x = width - rail - r;
+            vx = -vx * wallBounciness;
             collided = true;
         }
 
-        // top wall
-        if (y - r < 0) {
-            y = r;
-            vy = -vy;
+        if (y - r < rail) {
+            y = rail + r;
+            vy = -vy * wallBounciness;
             collided = true;
-        }
-        // bottom wall
-        else if (y + r > table.getHeight()) {
-            y = table.getHeight() - r;
-            vy = -vy;
+        } else if (y + r > height - rail) {
+            y = height - rail - r;
+            vy = -vy * wallBounciness;
             collided = true;
         }
 
@@ -80,32 +97,29 @@ public class PhysicsEngine implements GameObject {
         }
     }
 
-    private void resolveBallCollision(Ball b1, Ball b2)
-    {
+    private void resolveBallCollision(Ball b1, Ball b2) {
         Vector2D posDiff = b1.getPosition().subtract(b2.getPosition());
         double dist = posDiff.length();
 
         if (dist == 0 || dist > b1.getRadius() + b2.getRadius()) return;
 
-        Vector2D normalVector = posDiff.normalize();
-
-        Vector2D relativeVel = b1.getVelocity().subtract(b2.getVelocity());
-        double speed = relativeVel.dot(normalVector);
+        Vector2D normal = posDiff.normalize();
+        Vector2D relVel = b1.getVelocity().subtract(b2.getVelocity());
+        double speed = relVel.dot(normal);
 
         if (speed >= 0) return;
 
-        double impulse = 2 * speed / (b1.getMass() + b2.getMass());
+        // Elastic collision physics
+        double restitution = 0.92;
 
-        double restitution = 0.9; // sedikit hilang energi (smoother than perfect bounce)
+        double impulse = (1 + restitution) * speed / (b1.getMass() + b2.getMass());
+        b1.setVelocity(b1.getVelocity().subtract(normal.multiply(impulse * b2.getMass())));
+        b2.setVelocity(b2.getVelocity().add(normal.multiply(impulse * b1.getMass())));
 
-        b1.setVelocity(
-                b1.getVelocity().subtract(normalVector.multiply(impulse * b2.getMass()))
-                        .multiply(restitution)
-        );
-
-        b2.setVelocity(
-                b2.getVelocity().add(normalVector.multiply(impulse * b1.getMass()))
-                        .multiply(restitution)
-        );
+        // Anti-overlap correction
+        double overlap = (b1.getRadius() + b2.getRadius() - dist) / 2;
+        Vector2D correction = normal.multiply(overlap);
+        b1.setPosition(b1.getPosition().add(correction));
+        b2.setPosition(b2.getPosition().subtract(correction));
     }
 }

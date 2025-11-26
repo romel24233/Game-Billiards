@@ -1,108 +1,97 @@
-# 🎱 Billiards-2D
+# 🎱 Billiards-2D: Ultimate Edition
 
-Repository ini adalah implementasi tugas kelompok untuk mata kuliah **Desain dan Pemrograman Berbasis Objek (OOP)**. Tujuan proyek ini adalah membuat simulasi permainan billiard 2D dari awal.
+**A high-fidelity billiard simulation engine built from scratch using JavaFX.**
 
-> **Status:** Tahap Awal - Implementasi kerangka dasar dan GUI
+This repository is an advanced fork of the original *Billiards-2D* academic project. It serves as an R&D sandbox dedicated to exploring complex game mechanics, vector mathematics, and procedural graphics rendering without relying on external game engines.
 
----
-
-## 🛠️ Teknologi
-
-| Komponen | Teknologi | Versi |
-|----------|-----------|-------|
-| **Bahasa** | Java | 17+ |
-| **GUI Framework** | JavaFX | 21 |
-| **Build Tool** | Gradle (Kotlin DSL) | 8.14 |
-| **IDE** | IntelliJ IDEA | Community Edition |
+> **Current Status:** Stable Release (Physics & UI Overhaul)
 
 ---
 
-## 📁 Struktur Proyek
+## 🚀 Key Features
 
-```
-Billiards-2D/
-├── src/
-│   └── main/
-│       └── java/
-│           └── com/billiards2d/
-│               ├── BilliardApp.java      # Main class & Game loop
-│               ├── GameObject.java        # Interface polimorfisme
-│               ├── PhysicsEngine.java     # Engine simulasi fisika
-│               ├── Ball.java              # Abstract base class
-│               ├── CueBall.java           # Bola putih
-│               ├── ObjectBall.java        # Bola target
-│               ├── Table.java             # Meja billiard
-│               └── Vector2D.java          # Utilitas vektor
-├── build.gradle.kts            # Konfigurasi build & dependensi
-├── gradlew                     # Gradle wrapper (Linux/Mac)
-└── gradlew.bat                 # Gradle wrapper (Windows)
-```
+### 1. Advanced Physics Engine (`PhysicsEngine`)
+* **Elastic Collisions:** Implements accurate 2D momentum conservation for ball-to-ball interactions with a restitution coefficient of 0.92.
+* **High-Energy Rails:** Features "live" table cushions (0.98 restitution) allowing for realistic bank shots and multi-rail kicks.
+* **Dynamic Friction:** Simulates cloth resistance using continuous velocity damping for natural ball deceleration.
+* **Pocketing System:** Precise distance-based detection for potting balls and handling scratch fouls.
+
+### 2. Intelligent Aiming Assistant (`CueStick`)
+* **Raycasting Trajectory:** Real-time prediction line that calculates the exact point of impact.
+* **Branching Paths:** Visualizes post-collision paths for both the target ball (impact line) and the cue ball (tangent line).
+* **Wall Clipping:** Prediction lines respect table boundaries using vector math to determine exact intersection points.
+* **Angle Snapping:** Automatically snaps aiming vector to the ball's center for precise straight shots.
+
+### 3. Procedural Rendering & Modern UI
+* **Asset-Free 3D Visuals:** All graphics (balls, lighting, shadows) are generated programmatically using `RadialGradient` and JavaFX Canvas API. No external image files are used.
+* **HD Table Design:** Features a detailed wood-grain bezel, bevel effects, and standard aiming diamond markers.
+* **Professional HUD:** A separate dashboard layout containing a gradient Power Meter and a recessed "Ball Tray" for tracking pocketed balls.
 
 ---
 
-## ☕ Yang Perlu Disiapkan
+## 🛠️ Tech Stack
 
-Sebelum menjalankan proyek, install dulu:
+| Component | Technology | Details |
+| :--- | :--- | :--- |
+| **Language** | **Java 17+** | Core logic & Object-Oriented Architecture |
+| **Renderer** | **JavaFX 21** | Hardware-accelerated 2D Canvas rendering |
+| **Build System** | **Gradle 8.x** | Dependency management & build automation |
+| **Format** | **Kotlin DSL** | Used for `build.gradle.kts` configuration |
 
-1. **Git** - Untuk clone repository
-2. **Java JDK 17 atau lebih baru**
-    - Download dari [Eclipse Temurin](https://adoptium.net/)
-    - Windows: Download installer `.msi`
-    - Linux: `sudo apt install openjdk-17-jdk` atau `sudo pacman -S jdk17-openjdk`
+---
 
-Cek apakah Java sudah terinstall:
+## 🎮 Controls
+
+* **Aim:** Move mouse cursor around the cue ball.
+* **Power:** Click and drag the mouse backward (away from the ball).
+    * *The Power Bar on the right indicates shot strength.*
+    * *Trajectory lines extend based on predicted force.*
+* **Shoot:** Release the mouse button.
+
+---
+
+## ▶️ How to Run
+
+### Prerequisites
+Ensure you have **Java JDK 17** (or higher) installed on your machine.
+
+### Execution
+This project includes the Gradle Wrapper, so no manual Gradle installation is required.
+
+**Linux / macOS:**
 ```bash
-java -version
+./gradlew run
+````
+
+**Windows:**
+
+```cmd
+gradlew.bat run
 ```
 
-> **Catatan:** Gradle dan JavaFX akan didownload otomatis, tidak perlu install manual.
+-----
 
----
+## 📂 Project Structure
 
-## ▶️ Cara Menjalankan Program
+The codebase follows a strict **Responsibility-Driven Design (RDD)**:
 
-### Pakai IntelliJ IDEA (Paling Mudah)
-
-1. **Clone repository**
-   ```bash
-   git clone https://github.com/Billiards-2D/Billiards-2D.git
-   ```
-
-2. **Buka IntelliJ IDEA**
-    - Pilih **Open** (jangan "New Project")
-    - Pilih folder `Billiards-2D`
-    - Klik **Trust Project**
-
-3. **Tunggu proses download selesai**
-    - Lihat progress bar di pojok kanan bawah
-    - Gradle akan download JavaFX dan dependencies lainnya
-    - Biasanya 1-5 menit (tergantung internet)
-
-4. **Jalankan program**
-    - Klik tab **Gradle** di sisi kanan
-    - Buka: **Billiards-2D → Tasks → application → run**
-    - Double-click **run**
-
-### Pakai Terminal/Command Line
-
-```bash
-# Clone repository
-git clone https://github.com/Billiards-2D/Billiards-2D.git
-cd Billiards-2D
-
-# Jalankan
-./gradlew run              # Linux/Mac
-gradlew.bat run            # Windows
+```
+src/main/java/com/billiards2d/
+├── BilliardApp.java      # Entry point, Game Loop, and UI Rendering
+├── PhysicsEngine.java    # Centralized physics logic (Collisions, Movement)
+├── CueStick.java         # Input handling and Raycasting (Aim prediction)
+├── Table.java            # Environment rendering (Rails, Pockets, Markers)
+├── Ball.java             # Abstract base entity with Physics properties
+├── CueBall.java          # Player-controlled ball entity
+├── ObjectBall.java       # Target balls (Numbered & Colored)
+├── GameObject.java       # Polymorphic interface for game entities
+└── Vector2D.java         # Math utility for vector operations
 ```
 
----
+-----
 
-## ⚠️ Kalau Ada Masalah
+## 🔮 Roadmap
 
-**Program tidak jalan / Error JavaFX:**
-- Jangan run langsung dari `BilliardApp.java`
-- Gunakan Gradle panel: **Tasks → application → run**
-
-**Gradle sync error:**
-- Pastikan internet stabil
-- Coba: **File → Invalidate Caches → Invalidate and Restart**
+* [ ] **Game Rules:** Implementation of standard 8-Ball rules (Solids vs. Stripes).
+* [ ] **AI Opponent:** Simple bot using trajectory evaluation to find optimal shots.
+* [ ] **Network Play:** Socket-based multiplayer support.
