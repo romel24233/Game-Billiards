@@ -30,8 +30,7 @@ public class Vector2D {
 
     public Vector2D normalize() {
         double len = length();
-        if (len == 0) return new Vector2D(0, 0);
-        return new Vector2D(x / len, y / len);
+        return len == 0 ? new Vector2D(0, 0) : new Vector2D(x / len, y / len);
     }
 
     public double dot(Vector2D other) {
