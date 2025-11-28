@@ -1,14 +1,11 @@
 package com.billiards2d;
 
+import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import javafx.geometry.VPos;
 
 public abstract class Ball implements GameObject {
 
@@ -31,10 +28,7 @@ public abstract class Ball implements GameObject {
 
     @Override
     public void update(double deltaTime) {
-        if (!active) return;
-        position = position.add(velocity.multiply(deltaTime));
-        velocity = velocity.multiply(0.990); // Friction
-        if (velocity.length() < 1.0) velocity = new Vector2D(0, 0);
+        // Managed by PhysicsEngine to support sub-stepping
     }
 
     @Override
@@ -55,11 +49,11 @@ public abstract class Ball implements GameObject {
             return;
         }
 
-        // Shadow
+        // Drop Shadow
         gc.setFill(Color.rgb(0, 0, 0, 0.5));
         gc.fillOval(x - r + (r * 0.15), y - r + (r * 0.15), r * 2, r * 2);
 
-        // Base
+        // Base Sphere
         boolean isStripe = num >= 9 && num <= 15;
         Color baseColor = (num == 0 || isStripe) ? Color.WHITE : c;
 
@@ -72,7 +66,7 @@ public abstract class Ball implements GameObject {
         gc.setFill(baseGrad);
         gc.fillOval(x - r, y - r, r * 2, r * 2);
 
-        // Stripe
+        // Stripe Pattern
         if (isStripe) {
             gc.save();
             gc.beginPath();
@@ -83,7 +77,7 @@ public abstract class Ball implements GameObject {
             gc.restore();
         }
 
-        // Highlight
+        // Specular Highlight
         RadialGradient glare = new RadialGradient(
                 0, 0, x - (r * 0.35), y - (r * 0.35), r * 0.7,
                 false, CycleMethod.NO_CYCLE,
@@ -93,23 +87,26 @@ public abstract class Ball implements GameObject {
         gc.setFill(glare);
         gc.fillOval(x - r * 0.8, y - r * 0.8, r * 1.2, r * 1.2);
 
-        // Number
+        // Number Badge
         if (num > 0) {
             double badgeSize = r * 1.1;
             gc.setFill(Color.WHITE);
             gc.fillOval(x - badgeSize / 2, y - badgeSize / 2, badgeSize, badgeSize);
+
             gc.setFill(Color.BLACK);
             gc.setTextAlign(TextAlignment.CENTER);
             gc.setTextBaseline(VPos.CENTER);
             gc.setFont(Font.font("Arial", FontWeight.BOLD, r * 0.7));
             gc.fillText(String.valueOf(num), x, y);
         } else if (num == 0) {
-            gc.setFill(Color.RED); // Cue dot
+            // Cue Ball Dot
+            gc.setFill(Color.RED);
             double dotSize = r * 0.2;
             gc.fillOval(x - dotSize / 2, y - dotSize / 2, dotSize, dotSize);
         }
     }
 
+    // Accessors
     public Vector2D getPosition() { return position; }
     public void setPosition(Vector2D position) { this.position = position; }
     public Vector2D getVelocity() { return velocity; }

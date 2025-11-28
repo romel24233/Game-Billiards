@@ -319,7 +319,7 @@ public class BilliardApp extends Application {
         }
 
         String p1Name = "PLAYER 1";
-        String p2Name = isVsAI ? "BOT AI" : (isServer ? "OPPONENT" : (isClient ? "YOU (CLIENT)" : "PLAYER 2"));
+        String p2Name = isVsAI ? "BOT" : (isServer ? "OPPONENT" : (isClient ? "YOU (CLIENT)" : "PLAYER 2"));
         if (isServer) p1Name = "YOU (HOST)";
         else if (isClient) p1Name = "OPPONENT";
 
