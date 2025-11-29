@@ -18,7 +18,10 @@ public class CueStick implements GameObject {
 
     private static final double MAX_POWER = 4000;
     private static final double FORCE_MULTIPLIER = 20.0;
-    private static final double BALL_RADIUS = 10;
+    private static final double TABLE_WIDTH = 1100;
+    private static final double TABLE_HEIGHT = 550;
+    private static final double RAIL_SIZE = 55;
+    private static final double BALL_RADIUS = 15;
 
     public CueStick(CueBall cueBall, List<GameObject> allObjects) {
         this.cueBall = cueBall;
@@ -35,7 +38,6 @@ public class CueStick implements GameObject {
             Vector2D direction = drag.normalize();
             currentPower = Math.min(drag.length() * FORCE_MULTIPLIER, MAX_POWER);
 
-            // Raycasting
             double bestDist = Double.MAX_VALUE;
             Ball target = null;
 
@@ -61,7 +63,6 @@ public class CueStick implements GameObject {
 
             double wallDist = getDistanceToWall(cueBall.getPosition(), direction);
 
-            // Visual Guides (White Solid)
             gc.save();
             gc.setStroke(Color.WHITE);
             gc.setLineWidth(2);
@@ -69,29 +70,21 @@ public class CueStick implements GameObject {
 
             if (target != null && bestDist < wallDist) {
                 Vector2D impact = cueBall.getPosition().add(direction.multiply(bestDist));
-
-                // Aim Line
                 gc.strokeLine(cueBall.getPosition().getX(), cueBall.getPosition().getY(), impact.getX(), impact.getY());
 
-                // Ghost Ball
                 gc.strokeOval(impact.getX() - BALL_RADIUS, impact.getY() - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2);
                 gc.setFill(Color.WHITE);
                 gc.fillOval(impact.getX() - 2, impact.getY() - 2, 4, 4);
 
-                // Branching Lines
                 Vector2D normal = target.getPosition().subtract(impact).normalize();
                 double dot = direction.dot(normal);
                 Vector2D tangent = direction.subtract(normal.multiply(dot)).normalize();
                 double guideLen = 45.0;
 
-                // Cue Path
                 Vector2D cueEnd = impact.add(tangent.multiply(guideLen));
                 gc.strokeLine(impact.getX(), impact.getY(), cueEnd.getX(), cueEnd.getY());
-
-                // Target Path
                 Vector2D targetEnd = target.getPosition().add(normal.multiply(guideLen));
                 gc.strokeLine(target.getPosition().getX(), target.getPosition().getY(), targetEnd.getX(), targetEnd.getY());
-
             } else {
                 Vector2D end = cueBall.getPosition().add(direction.multiply(wallDist));
                 gc.strokeLine(cueBall.getPosition().getX(), cueBall.getPosition().getY(), end.getX(), end.getY());
@@ -105,7 +98,10 @@ public class CueStick implements GameObject {
     }
 
     private double getDistanceToWall(Vector2D pos, Vector2D dir) {
-        double right = 800 - 30 - 10, left = 30 + 10, bottom = 400 - 30 - 10, top = 30 + 10;
+        double right = TABLE_WIDTH - RAIL_SIZE - BALL_RADIUS;
+        double left = RAIL_SIZE + BALL_RADIUS;
+        double bottom = TABLE_HEIGHT - RAIL_SIZE - BALL_RADIUS;
+        double top = RAIL_SIZE + BALL_RADIUS;
         double tMin = Double.MAX_VALUE;
 
         if (dir.getX() > 0) tMin = Math.min(tMin, (right - pos.getX()) / dir.getX());
@@ -117,25 +113,31 @@ public class CueStick implements GameObject {
         return tMin == Double.MAX_VALUE ? 0 : tMin;
     }
 
-    private void drawVisualStick(GraphicsContext gc, Vector2D dir) {
-        Vector2D start = cueBall.getPosition().add(dir.multiply(-20));
-        start = start.subtract(dir.multiply(15 + currentPower * 0.04));
-        Vector2D end = start.add(dir.multiply(-300));
+    private void drawVisualStick(GraphicsContext gc, Vector2D direction) {
+        Vector2D stickStart = cueBall.getPosition().add(direction.multiply(-20));
+        double pullBack = 15 + (currentPower * 0.04);
+        stickStart = stickStart.subtract(direction.multiply(pullBack));
+        Vector2D stickEnd = stickStart.add(direction.multiply(-300));
 
         gc.setStroke(Color.rgb(100, 60, 20));
         gc.setLineWidth(7);
-        gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+        gc.strokeLine(stickStart.getX(), stickStart.getY(), stickEnd.getX(), stickEnd.getY());
 
+        gc.setStroke(Color.rgb(140, 90, 40));
+        gc.setLineWidth(3);
+        gc.strokeLine(stickStart.getX(), stickStart.getY(), stickEnd.getX(), stickEnd.getY());
+
+        Vector2D tipEnd = stickStart.add(direction.multiply(-8));
         gc.setStroke(Color.CYAN);
         gc.setLineWidth(7);
-        Vector2D tip = start.add(dir.multiply(-8));
-        gc.strokeLine(start.getX(), start.getY(), tip.getX(), tip.getY());
+        gc.strokeLine(stickStart.getX(), stickStart.getY(), tipEnd.getX(), tipEnd.getY());
     }
 
     public void handleMousePressed(MouseEvent e) {
-        if (cueBall.getVelocity().length() > 0.1 || e.getY() < 0) return;
-        double dist = Math.sqrt(Math.pow(e.getX() - cueBall.getPosition().getX(), 2) + Math.pow(e.getY() - cueBall.getPosition().getY(), 2));
-        if (dist <= BALL_RADIUS * 8) {
+        if (cueBall.getVelocity().length() > 0.1) return;
+        double dx = e.getX() - cueBall.getPosition().getX();
+        double dy = e.getY() - cueBall.getPosition().getY();
+        if (Math.sqrt(dx * dx + dy * dy) <= BALL_RADIUS * 8) {
             isAiming = true;
             aimStart = cueBall.getPosition();
             aimCurrent = new Vector2D(e.getX(), e.getY());

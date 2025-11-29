@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 public class ObjectBall extends Ball {
     public ObjectBall(Vector2D position, int number) {
-        super(position, getColorForNumber(number), 10.0, number);
+        super(position, getColorForNumber(number), 15.0, number);
     }
 
     public static Color getColorForNumber(int number) {

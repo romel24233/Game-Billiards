@@ -11,9 +11,9 @@ public class PhysicsEngine implements GameObject {
 
     // Physics Constants
     private static final int SUB_STEPS = 10;
-    private static final double FRICTION = 0.990;
-    private static final double RESTITUTION = 0.92;
-    private static final double STOP_THRESHOLD = 1.5;
+    private static final double FRICTION = 0.992;
+    private static final double RESTITUTION = 0.95;
+    private static final double STOP_THRESHOLD = 1.0;
 
     public PhysicsEngine(Table table, List<GameObject> gameObjects) {
         this.table = table;
@@ -22,10 +22,8 @@ public class PhysicsEngine implements GameObject {
 
     @Override
     public void update(double deltaTime) {
-        // Apply friction once per frame
         applyFriction();
 
-        // Sub-stepping for accurate collision detection
         double stepTime = deltaTime / SUB_STEPS;
         for (int i = 0; i < SUB_STEPS; i++) {
             moveBalls(stepTime);
@@ -70,12 +68,13 @@ public class PhysicsEngine implements GameObject {
     public void draw(GraphicsContext gc) {}
 
     private boolean checkPocketCollision(Ball ball) {
-        double sensitiveRadius = table.getPocketRadius() * 1.0;
+        // Sensitivity check (1.2x pocket radius)
+        double sensitiveRadius = table.getPocketRadius() * 1.2;
         for (Vector2D pocket : table.getPockets()) {
             if (ball.getPosition().subtract(pocket).length() < sensitiveRadius) {
                 ball.setVelocity(new Vector2D(0, 0));
                 ball.setActive(false);
-                ball.setPosition(pocket); // Center visual
+                ball.setPosition(pocket);
                 GameBus.publish(GameBus.EventType.BALL_POTTED, ball);
                 return true;
             }
@@ -83,40 +82,36 @@ public class PhysicsEngine implements GameObject {
         return false;
     }
 
+    private boolean isNearPocket(Ball ball) {
+        double safeZone = table.getPocketRadius() + ball.getRadius();
+        for (Vector2D pocket : table.getPockets()) {
+            if (ball.getPosition().subtract(pocket).length() < safeZone) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void checkWallCollision(Ball ball) {
+        if (isNearPocket(ball)) return;
+
         double x = ball.getPosition().getX();
         double y = ball.getPosition().getY();
         double r = ball.getRadius();
         double rail = table.getRailSize();
         double w = table.getWidth();
         double h = table.getHeight();
-        double bounce = 0.85;
+        double bounce = 0.90;
 
         double vx = ball.getVelocity().getX();
         double vy = ball.getVelocity().getY();
         boolean collided = false;
 
-        // Horizontal Walls
-        if (x - r < rail) {
-            x = rail + r;
-            vx = Math.abs(vx) * bounce;
-            collided = true;
-        } else if (x + r > w - rail) {
-            x = w - rail - r;
-            vx = -Math.abs(vx) * bounce;
-            collided = true;
-        }
+        if (x - r < rail) { x = rail + r; vx = Math.abs(vx) * bounce; collided = true; }
+        else if (x + r > w - rail) { x = w - rail - r; vx = -Math.abs(vx) * bounce; collided = true; }
 
-        // Vertical Walls
-        if (y - r < rail) {
-            y = rail + r;
-            vy = Math.abs(vy) * bounce;
-            collided = true;
-        } else if (y + r > h - rail) {
-            y = h - rail - r;
-            vy = -Math.abs(vy) * bounce;
-            collided = true;
-        }
+        if (y - r < rail) { y = rail + r; vy = Math.abs(vy) * bounce; collided = true; }
+        else if (y + r > h - rail) { y = h - rail - r; vy = -Math.abs(vy) * bounce; collided = true; }
 
         if (collided) {
             ball.setPosition(new Vector2D(x, y));
@@ -131,7 +126,6 @@ public class PhysicsEngine implements GameObject {
 
         if (dist >= minDist || dist == 0) return;
 
-        // Position Correction (Anti-overlap)
         Vector2D normal = delta.normalize();
         double overlap = minDist - dist;
         Vector2D correction = normal.multiply(overlap * 0.5);
@@ -139,7 +133,6 @@ public class PhysicsEngine implements GameObject {
         b1.setPosition(b1.getPosition().add(correction));
         b2.setPosition(b2.getPosition().subtract(correction));
 
-        // Velocity Response
         Vector2D relVel = b1.getVelocity().subtract(b2.getVelocity());
         double velAlongNormal = relVel.dot(normal);
 

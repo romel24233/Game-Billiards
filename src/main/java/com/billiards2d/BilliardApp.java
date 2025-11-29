@@ -26,14 +26,17 @@ import java.util.Optional;
 
 public class BilliardApp extends Application {
 
-    public static final double TOP_HEADER_HEIGHT = 140;
-    public static final double TABLE_WIDTH = 800;
-    public static final double TABLE_HEIGHT = 400;
-    public static final double SIDEBAR_WIDTH = 60;
-    public static final double BOTTOM_HEIGHT = 40;
+    // Layout Constants
+    public static final double TOP_HEADER_HEIGHT = 160;
+    public static final double HEADER_GAP = 30;
+    public static final double TABLE_WIDTH = 1100;
+    public static final double TABLE_HEIGHT = 550;
+    public static final double SIDEBAR_WIDTH = 80;
+    public static final double BOTTOM_HEIGHT = 50;
 
     private static final double APP_WIDTH = TABLE_WIDTH + SIDEBAR_WIDTH;
-    private static final double APP_HEIGHT = TOP_HEADER_HEIGHT + TABLE_HEIGHT + BOTTOM_HEIGHT;
+    private static final double APP_HEIGHT = TOP_HEADER_HEIGHT + HEADER_GAP + TABLE_HEIGHT + BOTTOM_HEIGHT;
+    private static final double TABLE_Y_OFFSET = TOP_HEADER_HEIGHT + HEADER_GAP;
     private final double MENU_X_CENTER = APP_WIDTH / 2;
 
     private GraphicsContext gc;
@@ -61,7 +64,7 @@ public class BilliardApp extends Application {
         Canvas canvas = new Canvas(APP_WIDTH, APP_HEIGHT);
         gc = canvas.getGraphicsContext2D();
         StackPane root = new StackPane(canvas);
-        root.setStyle("-fx-background-color: #1a1a1a;");
+        root.setStyle("-fx-background-color: #121212;");
         Scene scene = new Scene(root, APP_WIDTH, APP_HEIGHT);
 
         initializeGameObjects();
@@ -91,7 +94,7 @@ public class BilliardApp extends Application {
                 handleMenuClick(e.getX(), e.getY());
                 return;
             }
-            if (canPlayerShoot()) {
+            if (e.getY() >= TABLE_Y_OFFSET && canPlayerShoot()) {
                 MouseEvent shifted = shiftEvent(e);
                 if (canPlayerMoveBall() && isHoveringCueBall(shifted)) {
                     isDraggingCueBall = true;
@@ -103,7 +106,7 @@ public class BilliardApp extends Application {
         });
 
         scene.setOnMouseDragged(e -> {
-            if (e.getY() >= TOP_HEADER_HEIGHT && canPlayerShoot()) {
+            if (e.getY() >= TABLE_Y_OFFSET && canPlayerShoot()) {
                 MouseEvent shifted = shiftEvent(e);
                 if (isDraggingCueBall) {
                     moveCueBallTo(shifted.getX(), shifted.getY());
@@ -117,16 +120,17 @@ public class BilliardApp extends Application {
             MouseEvent shifted = shiftEvent(e);
             if (isDraggingCueBall) {
                 isDraggingCueBall = false;
-            } else if (e.getY() >= TOP_HEADER_HEIGHT && canPlayerShoot()) {
+            } else if (e.getY() >= TABLE_Y_OFFSET && canPlayerShoot()) {
                 cueStick.handleMouseReleased(shifted);
             }
         });
     }
 
+    // Translates mouse coordinates relative to the table area
     private MouseEvent shiftEvent(MouseEvent e) {
         return new MouseEvent(
                 e.getSource(), e.getTarget(), e.getEventType(),
-                e.getX(), e.getY() - TOP_HEADER_HEIGHT,
+                e.getX(), e.getY() - TABLE_Y_OFFSET,
                 e.getScreenX(), e.getScreenY(),
                 e.getButton(), e.getClickCount(), e.isShiftDown(), e.isControlDown(),
                 e.isAltDown(), e.isMetaDown(), e.isPrimaryButtonDown(), e.isMiddleButtonDown(),
@@ -141,23 +145,25 @@ public class BilliardApp extends Application {
 
         double startX = TABLE_WIDTH * 0.75;
         double startY = TABLE_HEIGHT / 2;
+        double d = 30;
+        double rowX = d * Math.cos(Math.toRadians(30));
 
-        // Rack setup
+        // Rack Setup
         gameObjects.add(new ObjectBall(new Vector2D(startX, startY), 1));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 18, startY - 10), 9));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 18, startY + 10), 2));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 36, startY - 20), 10));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 36, startY), 8));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 36, startY + 20), 3));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 54, startY - 30), 11));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 54, startY - 10), 7));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 54, startY + 10), 14));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 54, startY + 30), 4));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 72, startY - 40), 5));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 72, startY - 20), 13));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 72, startY), 15));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 72, startY + 20), 6));
-        gameObjects.add(new ObjectBall(new Vector2D(startX + 72, startY + 40), 12));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX, startY - 16), 9));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX, startY + 16), 2));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*2, startY - 32), 10));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*2, startY), 8));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*2, startY + 32), 3));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*3, startY - 48), 11));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*3, startY - 16), 7));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*3, startY + 16), 14));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*3, startY + 48), 4));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*4, startY - 64), 5));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*4, startY - 32), 13));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*4, startY), 15));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*4, startY + 32), 6));
+        gameObjects.add(new ObjectBall(new Vector2D(startX + rowX*4, startY + 64), 12));
 
         cueBall = new CueBall(new Vector2D(TABLE_WIDTH * 0.25, startY));
         gameObjects.add(cueBall);
@@ -204,13 +210,11 @@ public class BilliardApp extends Application {
     private void startGameLoop() {
         new AnimationTimer() {
             private long lastNanoTime = System.nanoTime();
-
             @Override
             public void handle(long currentNanoTime) {
                 double deltaTime = (currentNanoTime - lastNanoTime) / 1_000_000_000.0;
                 lastNanoTime = currentNanoTime;
                 if (deltaTime > 0.05) deltaTime = 0.05;
-
                 updateAndDraw(deltaTime);
                 checkTurnEnd();
             }
@@ -226,11 +230,11 @@ public class BilliardApp extends Application {
 
         for (GameObject obj : gameObjects) obj.update(deltaTime);
 
-        gc.setFill(Color.rgb(30, 30, 35));
+        gc.setFill(Color.rgb(18, 18, 18));
         gc.fillRect(0, 0, APP_WIDTH, APP_HEIGHT);
 
         gc.save();
-        gc.translate(0, TOP_HEADER_HEIGHT);
+        gc.translate(0, TABLE_Y_OFFSET);
         gc.beginPath();
         gc.rect(0, 0, TABLE_WIDTH, TABLE_HEIGHT);
         gc.clip();
@@ -293,24 +297,22 @@ public class BilliardApp extends Application {
     }
 
     private void drawTopHeader() {
-        LinearGradient bg = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(50, 50, 60)), new Stop(1, Color.rgb(30, 30, 35)));
-        gc.setFill(bg);
+        gc.setFill(Color.rgb(30, 30, 35));
         gc.fillRect(0, 0, APP_WIDTH, TOP_HEADER_HEIGHT);
 
         gc.setStroke(Color.GOLD);
         gc.setLineWidth(2);
         gc.strokeLine(0, TOP_HEADER_HEIGHT, APP_WIDTH, TOP_HEADER_HEIGHT);
 
-        drawButton(MENU_X_CENTER - 130, 15, 80, 25, "RESET AI", isVsAI);
+        drawButton(MENU_X_CENTER - 150, 25, 90, 30, "RESET AI", isVsAI);
         boolean isServer = modeArgs.equalsIgnoreCase("server");
-        drawButton(MENU_X_CENTER - 40, 15, 80, 25, "HOST", isServer);
+        drawButton(MENU_X_CENTER - 50, 25, 90, 30, "HOST", isServer);
         boolean isClient = modeArgs.equalsIgnoreCase("client");
-        drawButton(MENU_X_CENTER + 50, 15, 80, 25, "JOIN", isClient);
+        drawButton(MENU_X_CENTER + 50, 25, 90, 30, "JOIN", isClient);
 
         boolean p1Solids = true;
-        String p1Type = "OPEN";
-        String p2Type = "OPEN";
+        String p1Type = "OPEN TABLE";
+        String p2Type = "OPEN TABLE";
 
         if (!ruleEngine.isTableOpen()) {
             p1Solids = ruleEngine.isPlayer1Solids();
@@ -319,84 +321,85 @@ public class BilliardApp extends Application {
         }
 
         String p1Name = "PLAYER 1";
-        String p2Name = isVsAI ? "BOT" : (isServer ? "OPPONENT" : (isClient ? "YOU (CLIENT)" : "PLAYER 2"));
+        String p2Name = isVsAI ? "BOT AI" : (isServer ? "OPPONENT" : (isClient ? "YOU (CLIENT)" : "PLAYER 2"));
         if (isServer) p1Name = "YOU (HOST)";
         else if (isClient) p1Name = "OPPONENT";
 
-        drawPlayerBar(20, 55, p1Name, p1Type, p1Solids, ruleEngine.getCurrentPlayer() == 1);
-        drawPlayerBar(APP_WIDTH - 420, 55, p2Name, p2Type, !p1Solids, ruleEngine.getCurrentPlayer() == 2);
+        drawPlayerBar(40, 65, p1Name, p1Type, p1Solids, ruleEngine.getCurrentPlayer() == 1);
+        drawPlayerBar(APP_WIDTH - 540, 65, p2Name, p2Type, !p1Solids, ruleEngine.getCurrentPlayer() == 2);
     }
 
     private void drawPlayerBar(double x, double y, String name, String typeStr, boolean isSolid, boolean isTurn) {
-        double w = 400;
-        double h = 70;
+        double w = 500;
+        double h = 75;
 
         if (isTurn) {
-            gc.setEffect(new javafx.scene.effect.DropShadow(15, Color.rgb(0, 255, 0, 0.6)));
-            gc.setStroke(Color.LIME);
+            gc.setEffect(new javafx.scene.effect.DropShadow(25, Color.rgb(0, 255, 100, 0.5)));
+            gc.setStroke(Color.rgb(0, 255, 100));
             gc.setLineWidth(2);
         } else {
             gc.setEffect(null);
-            gc.setStroke(Color.rgb(80, 80, 80));
+            gc.setStroke(Color.rgb(60, 60, 60));
             gc.setLineWidth(1);
         }
 
         LinearGradient barGrad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(40, 40, 45)), new Stop(1, Color.rgb(25, 25, 30)));
+                new Stop(0, Color.rgb(45, 45, 50)), new Stop(1, Color.rgb(25, 25, 30)));
         gc.setFill(barGrad);
         gc.fillRoundRect(x, y, w, h, 15, 15);
         gc.strokeRoundRect(x, y, w, h, 15, 15);
         gc.setEffect(null);
 
         gc.setFill(isTurn ? Color.LIME : Color.GRAY);
-        gc.fillOval(x + 10, y + 10, 50, 50);
+        gc.fillOval(x + 15, y + 12, 50, 50);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 18));
+        gc.setFont(Font.font("Segoe UI", FontWeight.BOLD, 20));
         gc.setTextAlign(TextAlignment.LEFT);
         gc.setTextBaseline(VPos.TOP);
-        gc.fillText(name, x + 70, y + 10);
-        gc.setFont(Font.font("Arial", 12));
-        gc.setFill(Color.rgb(180, 180, 180));
-        gc.fillText(typeStr, x + 70, y + 32);
+        gc.fillText(name, x + 80, y + 15);
 
-        double ballStartY = y + 35;
-        double ballStartX = x + 140;
-        double miniRadius = 9;
-        double spacing = 22;
+        gc.setFont(Font.font("Arial", 14));
+        gc.setFill(Color.rgb(170, 170, 170));
+        gc.fillText(typeStr, x + 80, y + 42);
+
+        double ballStartY = y + 38;
+        double ballStartX = x + 180;
+        double miniRadius = 11;
+        double spacing = 26;
 
         if (ruleEngine.isTableOpen()) {
-            gc.setFill(Color.YELLOW);
-            gc.setFont(Font.font("Arial", 12));
-            gc.fillText("POCKET ANY BALL", ballStartX, ballStartY + 5);
+            gc.setFill(Color.rgb(255, 215, 0));
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            gc.fillText("BREAK / OPEN TABLE", ballStartX, ballStartY + 5);
         } else {
             int startNum = isSolid ? 1 : 9;
             int endNum = isSolid ? 7 : 15;
             for (int i = startNum; i <= endNum; i++) {
                 boolean onTable = isBallOnTable(i);
                 Color c = ObjectBall.getColorForNumber(i);
-                Ball.renderVisual(gc, ballStartX + ((i - startNum) * spacing), ballStartY + 10, miniRadius, i, c, onTable);
+                Ball.renderVisual(gc, ballStartX + ((i - startNum) * spacing), ballStartY, miniRadius, i, c, onTable);
             }
             boolean groupCleared = areAllTargetBallsPocketed(startNum, endNum);
             double eightX = ballStartX + (7 * spacing) + 10;
             if (groupCleared) gc.setEffect(new javafx.scene.effect.DropShadow(10, Color.GOLD));
-            Ball.renderVisual(gc, eightX, ballStartY + 10, miniRadius, 8, Color.BLACK, isBallOnTable(8));
+            Ball.renderVisual(gc, eightX, ballStartY, miniRadius, 8, Color.BLACK, isBallOnTable(8));
             gc.setEffect(null);
         }
     }
 
     private void drawSidebar() {
         double startX = TABLE_WIDTH;
-        gc.setFill(Color.rgb(25, 25, 25));
-        gc.fillRect(startX, TOP_HEADER_HEIGHT, SIDEBAR_WIDTH, TABLE_HEIGHT);
+        gc.setFill(Color.rgb(20, 20, 20));
+        gc.fillRect(startX, TABLE_Y_OFFSET, SIDEBAR_WIDTH, TABLE_HEIGHT);
 
-        double barW = 15;
-        double barH = TABLE_HEIGHT - 60;
+        double barW = 20;
+        double barH = TABLE_HEIGHT - 100;
         double barX = startX + (SIDEBAR_WIDTH - barW) / 2;
-        double barY = TOP_HEADER_HEIGHT + 30;
+        double barY = TABLE_Y_OFFSET + 30;
 
         gc.setStroke(Color.GRAY);
-        gc.setLineWidth(1);
+        gc.setLineWidth(2);
         gc.strokeRect(barX, barY, barW, barH);
 
         double powerRatio = cueStick.getCurrentPower() / cueStick.getMaxPower();
@@ -409,49 +412,50 @@ public class BilliardApp extends Application {
         }
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 10));
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 12));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("PWR", startX + SIDEBAR_WIDTH / 2, barY + barH + 15);
+        gc.fillText("PWR", startX + SIDEBAR_WIDTH / 2, barY + barH + 20);
     }
 
     private void drawFooter() {
-        double y = TOP_HEADER_HEIGHT + TABLE_HEIGHT;
-        gc.setFill(Color.rgb(15, 15, 15));
+        double y = TABLE_Y_OFFSET + TABLE_HEIGHT;
+        gc.setFill(Color.rgb(25, 25, 30));
         gc.fillRect(0, y, APP_WIDTH, BOTTOM_HEIGHT);
+
         gc.setStroke(Color.rgb(50, 50, 50));
         gc.strokeLine(0, y, APP_WIDTH, y);
 
         gc.setTextAlign(TextAlignment.LEFT);
         gc.setTextBaseline(VPos.CENTER);
-        gc.setFont(Font.font("Consolas", 14));
+        gc.setFont(Font.font("Consolas", 16));
 
         if (ruleEngine.isGameOver()) {
             gc.setFill(Color.RED);
-            gc.fillText(ruleEngine.getWinMessage(), 20, y + BOTTOM_HEIGHT / 2);
+            gc.fillText(ruleEngine.getWinMessage(), 30, y + BOTTOM_HEIGHT / 2);
         } else {
             gc.setFill(Color.CYAN);
-            gc.fillText("> " + lastLogMessage, 20, y + BOTTOM_HEIGHT / 2);
+            gc.fillText("> " + lastLogMessage, 30, y + BOTTOM_HEIGHT / 2);
 
             if (ruleEngine.isBallInHand()) {
                 if (canPlayerMoveBall()) {
                     gc.setFill(Color.YELLOW);
-                    gc.fillText("[BALL IN HAND] Drag Cue Ball", APP_WIDTH - 250, y + BOTTOM_HEIGHT / 2);
+                    gc.fillText("[BALL IN HAND] Drag Cue Ball", APP_WIDTH - 320, y + BOTTOM_HEIGHT / 2);
                 } else if (aiThinking) {
                     gc.setFill(Color.LIGHTGREEN);
-                    gc.fillText("AI Thinking...", APP_WIDTH - 200, y + BOTTOM_HEIGHT / 2);
+                    gc.fillText("AI Thinking...", APP_WIDTH - 220, y + BOTTOM_HEIGHT / 2);
                 }
             }
         }
     }
 
     private void drawButton(double x, double y, double w, double h, String text, boolean active) {
-        gc.setFill(active ? Color.rgb(0, 120, 215) : Color.rgb(60, 60, 60));
-        gc.fillRoundRect(x, y, w, h, 5, 5);
+        gc.setFill(active ? Color.rgb(0, 100, 200) : Color.rgb(60, 60, 60));
+        gc.fillRoundRect(x, y, w, h, 6, 6);
         gc.setStroke(Color.WHITE);
-        gc.setLineWidth(1);
-        gc.strokeRoundRect(x, y, w, h, 5, 5);
+        gc.setLineWidth(0.5);
+        gc.strokeRoundRect(x, y, w, h, 6, 6);
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 11));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
         gc.fillText(text, x + w / 2, y + h / 2);
@@ -481,7 +485,7 @@ public class BilliardApp extends Application {
 
     private void moveCueBallTo(double x, double y) {
         double r = cueBall.getRadius();
-        double rail = 35;
+        double rail = 55;
         x = Math.max(rail + r, Math.min(TABLE_WIDTH - rail - r, x));
         y = Math.max(rail + r, Math.min(TABLE_HEIGHT - rail - r, y));
 
@@ -504,14 +508,14 @@ public class BilliardApp extends Application {
     }
 
     private void handleMenuClick(double x, double y) {
-        if (y >= 15 && y <= 40) {
-            if (x >= MENU_X_CENTER - 130 && x <= MENU_X_CENTER - 50) {
+        if (y >= 25 && y <= 55) {
+            if (x >= MENU_X_CENTER - 150 && x <= MENU_X_CENTER - 60) {
                 modeArgs = "ai";
                 resetGame();
-            } else if (x >= MENU_X_CENTER - 40 && x <= MENU_X_CENTER + 40) {
+            } else if (x >= MENU_X_CENTER - 50 && x <= MENU_X_CENTER + 40) {
                 modeArgs = "server";
                 resetGame();
-            } else if (x >= MENU_X_CENTER + 50 && x <= MENU_X_CENTER + 130) {
+            } else if (x >= MENU_X_CENTER + 50 && x <= MENU_X_CENTER + 140) {
                 showJoinDialog();
             }
         }

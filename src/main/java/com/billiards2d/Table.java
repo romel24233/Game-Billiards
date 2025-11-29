@@ -12,8 +12,8 @@ public class Table implements GameObject {
 
     private final double width;
     private final double height;
-    private final double railSize = 30;
-    private final double pocketRadius = 20;
+    private final double railSize = 55;
+    private final double pocketRadius = 30;
     private List<Vector2D> pockets;
 
     public Table(double width, double height) {
@@ -24,12 +24,15 @@ public class Table implements GameObject {
 
     private void initializePockets() {
         pockets = new ArrayList<>();
-        pockets.add(new Vector2D(railSize, railSize));
-        pockets.add(new Vector2D(width - railSize, railSize));
-        pockets.add(new Vector2D(railSize, height - railSize));
-        pockets.add(new Vector2D(width - railSize, height - railSize));
-        pockets.add(new Vector2D(width / 2, railSize));
-        pockets.add(new Vector2D(width / 2, height - railSize));
+        double cornerOffset = railSize * 0.85;
+        pockets.add(new Vector2D(cornerOffset, cornerOffset));
+        pockets.add(new Vector2D(width - cornerOffset, cornerOffset));
+        pockets.add(new Vector2D(cornerOffset, height - cornerOffset));
+        pockets.add(new Vector2D(width - cornerOffset, height - cornerOffset));
+
+        double sideOffset = railSize * 0.6;
+        pockets.add(new Vector2D(width / 2, sideOffset));
+        pockets.add(new Vector2D(width / 2, height - sideOffset));
     }
 
     @Override
@@ -37,49 +40,61 @@ public class Table implements GameObject {
 
     @Override
     public void draw(GraphicsContext gc) {
-        // Frame
-        gc.setFill(Color.rgb(101, 67, 33));
+        gc.setFill(Color.rgb(80, 40, 10));
         gc.fillRect(0, 0, width, height);
-        gc.setStroke(Color.rgb(139, 69, 19));
-        gc.setLineWidth(5);
-        gc.strokeRect(5, 5, width - 10, height - 10);
+        gc.setStroke(Color.rgb(120, 70, 30));
+        gc.setLineWidth(4);
+        gc.strokeRect(4, 4, width - 8, height - 8);
 
-        // Cloth
-        gc.setFill(Color.rgb(0, 100, 0));
-        gc.fillRect(railSize, railSize, width - (railSize * 2), height - (railSize * 2));
+        gc.setFill(Color.rgb(0, 100, 30));
+        gc.fillRoundRect(railSize, railSize, width - (railSize * 2), height - (railSize * 2), 12, 12);
 
-        // Pockets
         for (Vector2D pocket : pockets) {
             RadialGradient holeGrad = new RadialGradient(
                     0, 0, pocket.getX(), pocket.getY(), pocketRadius,
                     false, CycleMethod.NO_CYCLE,
                     new Stop(0.0, Color.BLACK),
-                    new Stop(1.0, Color.rgb(50, 50, 50))
+                    new Stop(0.8, Color.rgb(20, 20, 20)),
+                    new Stop(1.0, Color.rgb(60, 40, 20))
             );
             gc.setFill(holeGrad);
             gc.fillOval(pocket.getX() - pocketRadius, pocket.getY() - pocketRadius, pocketRadius * 2, pocketRadius * 2);
+
+            gc.setStroke(Color.rgb(40, 20, 5));
+            gc.setLineWidth(2);
+            gc.strokeOval(pocket.getX() - pocketRadius, pocket.getY() - pocketRadius, pocketRadius * 2, pocketRadius * 2);
         }
 
-        // Aiming Diamonds
+        drawDetails(gc);
+    }
+
+    private void drawDetails(GraphicsContext gc) {
         gc.setFill(Color.WHITESMOKE);
-        double markerSize = 5;
+        double markerSize = 8;
+        double offset = railSize / 2;
+
         for (int i = 1; i < 8; i++) {
             if (i == 4) continue;
             double x = railSize + (i * (width - 2 * railSize) / 8);
-            gc.fillOval(x - markerSize / 2, railSize / 2 - markerSize / 2, markerSize, markerSize);
-            gc.fillOval(x - markerSize / 2, height - railSize / 2 - markerSize / 2, markerSize, markerSize);
+            drawDiamond(gc, x, offset, markerSize);
+            drawDiamond(gc, x, height - offset, markerSize);
         }
         for (int i = 1; i < 4; i++) {
             double y = railSize + (i * (height - 2 * railSize) / 4);
-            gc.fillOval(railSize / 2 - markerSize / 2, y - markerSize / 2, markerSize, markerSize);
-            gc.fillOval(width - railSize / 2 - markerSize / 2, y - markerSize / 2, markerSize, markerSize);
+            drawDiamond(gc, offset, y, markerSize);
+            drawDiamond(gc, width - offset, y, markerSize);
         }
 
-        // Head String
-        gc.setStroke(Color.WHITE);
+        gc.setStroke(Color.rgb(255, 255, 255, 0.25));
         gc.setLineWidth(1);
         double headStringX = width * 0.25;
         gc.strokeLine(headStringX, railSize, headStringX, height - railSize);
+    }
+
+    private void drawDiamond(GraphicsContext gc, double cx, double cy, double size) {
+        double[] xPoints = {cx, cx + size/1.5, cx, cx - size/1.5};
+        double[] yPoints = {cy - size/1.5, cy, cy + size/1.5, cy};
+        gc.fillPolygon(xPoints, yPoints, 4);
     }
 
     public double getWidth() { return width; }

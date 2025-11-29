@@ -94,9 +94,10 @@ public class AdvancedBot {
     }
 
     private boolean isValidPosition(Vector2D pos) {
-        double r = 10, rail = 30;
-        if (pos.getX() < rail + r || pos.getX() > 800 - rail - r) return false;
-        if (pos.getY() < rail + r || pos.getY() > 400 - rail - r) return false;
+        double r = 15, rail = 55;
+        if (pos.getX() < rail + r || pos.getX() > 1100 - rail - r) return false;
+        if (pos.getY() < rail + r || pos.getY() > 550 - rail - r) return false;
+
         for (GameObject obj : objects) {
             if (obj instanceof Ball && ((Ball) obj).isActive()) {
                 if (pos.subtract(((Ball) obj).getPosition()).length() < r * 2.1) return false;
