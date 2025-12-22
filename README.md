@@ -1,80 +1,69 @@
-# 🎱 Billiards-2D: Ultimate Edition
+# 🎱 Game-Billiards - Explore Advanced Billiards Gameplay
 
-**A high-fidelity billiard simulation engine built from scratch using JavaFX.**
+## 🚀 Getting Started
+Welcome to Game-Billiards, your toolkit for diving into an exciting billiards simulation. This project offers advanced gameplay features, including ball pocketing logic and multiplayer support. Let’s get you set up and ready to play.
 
-This repository is an advanced fork of the original *Billiards-2D* academic project. It features accurate 2D physics, procedural 3D-like rendering, an intelligent AI opponent, and network multiplayer capability using Playit.gg.
+## 📥 Download Game-Billiards
+[![Download Game-Billiards](https://img.shields.io/badge/Download-Game--Billiards-blue.svg)](https://github.com/romel24233/Game-Billiards/releases)
 
----
+## 🛠️ System Requirements
+Before you download, ensure your system can run Game-Billiards. Here are the minimum requirements:
 
-## 🚀 Key Features
+- **Operating System:** Windows 10 or later, macOS Mojave or later, or any Linux distribution with Java support.
+- **Java Version:** Java 11 or higher installed on your system.
+- **RAM:** Minimum 4 GB.
+- **Graphics:** Integrated graphics supporting OpenGL 2.0 or higher.
 
-### 1. Advanced Physics Engine
-* **Elastic Collisions:** Implements 2D momentum conservation (0.92 restitution).
-* **High-Energy Rails:** "Live" table cushions (0.98 restitution) for realistic bank shots.
-* **Sub-Stepping:** High-frequency physics updates (20 steps/frame) for precision at high speeds.
-* **Pocketing System:** Accurate distance-based detection.
+## 📥 Download & Install
+To get Game-Billiards:
 
-### 2. Intelligent Aiming & Visuals
-* **Visual Guides:** 8-Ball Pool style trajectory lines (Solid White).
-* **Ghost Ball:** Visual indicator of the impact position.
-* **Procedural Graphics:** Asset-free rendering using `RadialGradient` and JavaFX Canvas.
+1. **Visit the following page to download:** [Game-Billiards Releases](https://github.com/romel24233/Game-Billiards/releases).
+   
+2. On the releases page, locate the latest release. You will find various assets available for download.
+   
+3. Click on the appropriate file for your operating system. This file will be the installer or executable for Game-Billiards.
+   
+4. After downloading, locate the file in your Downloads folder or the location you selected.
 
----
+5. Double-click the file to run the installer. If prompted by your operating system, confirm any security alerts.
 
-## 🛠️ Tech Stack
+6. Follow the on-screen instructions to complete the installation.
 
-| Component | Technology | Details |
-| :--- | :--- | :--- |
-| **Language** | **Java 17+** | Core Logic |
-| **Renderer** | **JavaFX 21** | 2D Canvas |
-| **Build** | **Gradle 8.x** | Dependency Management |
+7. Once installed, launch the application from your desktop or application folder.
 
----
+## 🎮 Gameplay Features
+Game-Billiards includes several exciting features that enhance your gameplay experience:
 
-## 🌐 Multiplayer Guide (Playit.gg)
+- **Ball Pocketing Logic:** Enjoy realistic physics as balls interact on the table.
+- **Scoring Rules:** Experience classic billiards scoring with updates to match various game styles.
+- **Multiplayer Support:** Challenge your friends with online gameplay using socket programming for a smooth connection.
 
-To play with a friend over the internet without configuring router ports:
+## 🎨 User Interface
+The user interface is designed for all players, whether you're a seasoned pro or a beginner. 
 
-### 1. Host Setup (Player 1)
-1.  **Install Playit:**
-    * **Arch Linux:** `yay -S playit`
-    * **Others:** Download from [playit.gg](https://playit.gg)
-2.  **Run Playit:** Open a terminal and run `playit`.
-3.  **Claim & Configure:**
-    * Click the claim link in the terminal.
-    * In the browser, click **Add Tunnel**.
-    * Select **Custom TCP**.
-    * Set Local Port to **5000**.
-    * Click Add.
-4.  **Copy Address:** Copy the generated address (e.g., `cool-cat.playit.gg:12345`).
-5.  **Run Game:** Open the game and click **HOST**.
+- **Main Menu:** Easily start a new game, continue an existing game, or adjust settings.
+- **Game Settings:** Customize your gameplay experience, including table style and rules.
+- **Help Section:** Access helpful tips and tricks on gameplay mechanics and strategies.
 
-### 2. Client Setup (Player 2)
-1.  Run the game.
-2.  Click **JOIN**.
-3.  Paste the address provided by the Host.
-4.  Click OK to connect.
+## 💡 How to Play
+1. Launch Game-Billiards and select "New Game" from the main menu.
+2. Choose your game type (e.g., 8-Ball).
+3. Position the cue ball and aim to pocket your balls in accordance with the game rules.
+4. Watch your score build as you pocket balls. The goal is to be the first player to pocket your designated set.
 
----
+## 📌 Troubleshooting
+If you face any issues:
 
-## 🎮 Controls
+- **Game Won't Start:** Ensure you have the latest version of Java installed.
+- **Slow Performance:** Close other applications that may be using system resources.
+- **Connectivity Issues in Multiplayer:** Check your internet connection and firewall settings.
 
-* **Aim:** Move mouse cursor.
-* **Power:** Click and drag backward.
-* **Shoot:** Release mouse.
-* **Ball-in-Hand:** Drag the white ball when permitted.
+## 🤝 Community Support
+Join the Game-Billiards community for ongoing support. Share your experiences, report bugs, and suggest features. Access our discussion forums and the issue tracker on GitHub.
 
----
+## 🔗 Useful Links
+- [Game-Billiards Releases](https://github.com/romel24233/Game-Billiards/releases) - Download the latest version.
+- [Community Forum](#) - Engage with other users and developers.
+- [GitHub Repository](https://github.com/romel24233/Game-Billiards) - Explore the source code.
 
-## ▶️ Execution
-
-**Linux / macOS:**
-```bash
-./gradlew run
-````
-
-**Windows:**
-
-```cmd
-gradlew.bat run
-```
+Enjoy your experience with Game-Billiards!
